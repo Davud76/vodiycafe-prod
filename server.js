@@ -9,7 +9,7 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 app.use(cors());
 app.use(express.json());
 
-// Static folders
+// Static folders test
 app.use('/ringtone', express.static(path.join(__dirname, 'ringtone')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/', express.static(path.join(__dirname, 'public')));
