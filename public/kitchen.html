@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VodiyCafe — Kitchen</title>
+<link rel="icon" href="/images/photo_2025-10-20_23-48-50.jpg" />
+
+<style>
+  /* --- LAYOUT STYLES (UNCHANGED) --- */
+  body { margin:0; font-family:Arial,sans-serif; }
+  header {
+    position:relative;
+    background: #ffd700;
+    padding:12px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    border-bottom:2px solid #d4ac0d;
+    color:#fff;
+  }
+  header h1 { font-size:22px; margin:0; }
+  #clock { font-weight:bold; color:#333; }
+  .container { display:flex; height:calc(100vh-64px); gap:16px; padding:16px; box-sizing:border-box; }
+  .left, .right {
+    flex:1; overflow-y:auto; padding:16px;
+    border-radius:12px; background:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  }
+  .left { border-right:3px solid #eee; }
+  h2 { margin-top:0; color:#3498db; font-size:20px; margin-bottom:12px; }
+  .order {
+    background:#fefefe; padding:14px 16px; border-radius:10px;
+    margin-bottom:12px; box-shadow:0 4px 10px rgba(0,0,0,0.06);
+    transition:transform 0.15s, box-shadow 0.15s;
+  }
+  .order:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,0.1); }
+  .meta { color:#666; font-size:13px; margin-top:6px; }
+  .controls { display:flex; gap:8px; margin-top:8px; }
+  .btn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; transition:all 0.2s; }
+  .btn:hover { transform:translateY(-1px); }
+  .btn-accept { background:#e74c3c; color:#fff; }
+  .btn-accepted { background:#2ecc71; color:#fff; }
+  .btn-print { background:#3498db; color:#fff; }
+  #clearBtn { background:#0a0349; color:#fff; padding:10px 16px; border-radius:8px; border:none; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  #clearBtn:hover { background:#d35400; transform:translateY(-1px); }
+  #salesTotal {
+    margin-top:12px; font-weight:bold; font-size:18px;
+    background:#b8fc0d; color:#0b581c; padding:12px 16px; border-radius:10px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12); display:inline-block;
+  }
+  /* Modal */
+  .modal-backdrop { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:60; justify-content:center; align-items:center; }
+  .modal-card {
+    background:#fff; padding:24px 32px; border-radius:12px; min-width:320px; max-width:400px;
+    box-shadow:0 12px 28px rgba(0,0,0,0.25); display:flex; flex-direction:column; gap:16px;
+  }
+  .modal-card h3 { margin:0; font-size:20px; font-weight:700; text-align:center; }
+  .modal-close { position:absolute; top:16px; right:20px; cursor:pointer; font-size:20px; color:#888; transition:color 0.2s; }
+  .modal-close:hover { color:#333; }
+  .form-row { display:flex; flex-direction:column; gap:6px; }
+  .input, .select { width:100%; padding:10px 12px; border-radius:8px; border:1px solid #ccc; font-size:14px; transition:all 0.2s; }
+  .input:focus, .select:focus { outline:none; border-color:#3498db; box-shadow:0 0 6px rgba(52,152,219,0.3); }
+  .modal-actions { display:flex; justify-content:space-between; gap:12px; margin-top:8px; }
+  #modalCancel { background:#ddd; color:#333; flex:1; border-radius:8px; padding:10px 0; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  #modalCancel:hover { background:#ccc; transform:translateY(-1px); }
+  #modalConfirm { background:#e67e22; color:#fff; flex:1; border-radius:8px; padding:10px 0; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  #modalConfirm:hover { background:#d35400; transform:translateY(-1px); }
+@media(max-width:900px){ .container{flex-direction:column;} .left{border-right:0; border-bottom:3px solid #eee;} }
+</style>
+</head>
+
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button id="clearBtn">Clear</button>
+    <h1>🍳 VodiyCafe — Kitchen</h1>
+  </div>
+
+  <!-- Clock -->
+  <div id="clock"></div>
+
+  <!-- Analytics Button (right side) -->
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button id="analyticsBtn" style="background:#3498db;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;display:none;">
+      📊 Sales Analytics
+    </button>
+  </div>
+
+  <!-- Logo (centered) -->
+  <img src="/images/photo_2025-10-20_23-48-50.jpg" alt="Logo" style="position:absolute;left:50%;transform:translateX(-50%);height:60px;">
+</header>
+
+<div class="container">
+  <div class="left">
+    <h2>Live Orders</h2>
+    <div id="liveError" class=""></div>
+    <div id="liveOrders"></div>
+  </div>
+  <div class="right">
+    <h2>Today's Order History</h2>
+    <div id="historyError" class=""></div>
+    <div id="history"></div>
+    <div id="salesTotal">💰 Total Sales: €0.00</div>
+  </div>
+</div>
+
+<audio id="orderSound" src="/ringtone/doordash_new_order.mp3" preload="auto"></audio>
+
+<!-- CLEAR MODAL -->
+<div id="clearModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <span class="modal-close" id="modalCloseBtn">✖️</span>
+    <h3>Clear Orders</h3>
+    <div class="form-row">
+      <label>Kitchen Password</label>
+      <input id="modalPassword" class="input" type="password" autocomplete="off" />
+    </div>
+    <div class="form-row">
+      <label>Which list to clear?</label>
+      <select id="modalTarget" class="select">
+        <option value="live">Live Orders (move to history and clear)</option>
+        <option value="history">Today's Order History (clear only history)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button id="modalCancel" class="btn">Cancel</button>
+      <button id="modalConfirm" class="btn">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- KITCHEN PASSWORD PROMPT -->
+<div id="kitchen-popup" class="modal-backdrop">
+  <div class="modal-card">
+    <h3>Enter Kitchen Password</h3>
+    <input id="kitchenPasswordInput" type="password" placeholder="Password..." class="input" />
+    <button id="kitchenSubmitBtn" class="btn" style="background:#27ae60; color:#fff;">Confirm</button>
+    <div id="kitchenError" style="color:red; margin-top:12px; display:none; font-weight:bold;">Wrong password!</div>
+  </div>
+</div>
+
+<script>
+let lastLiveCount = 0;
+const POLL_MS = 3000;
+let kitchenPassword = null;
+
+// --- HELPERS ---
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function showError(areaId,message){
+  const el = document.getElementById(areaId);
+  if(!message){ el.innerHTML=''; el.style.display='none'; return; }
+  el.innerHTML=`<div style="color:red">${message}</div>`; el.style.display='block';
+}
+
+// --- LOAD ORDERS ---
+async function loadAll(){
+  try{
+    const [ordersRes, historyRes] = await Promise.all([fetch('/api/orders'), fetch('/api/history')]);
+    const orders = ordersRes.ok ? await ordersRes.json().catch(()=>[]) : [];
+    if(!ordersRes.ok) showError('liveError','Failed to load live orders: '+ordersRes.status); else showError('liveError','');
+    if((orders||[]).length > lastLiveCount) document.getElementById('orderSound').play().catch(()=>{});
+    lastLiveCount = (orders||[]).length;
+    renderLive(orders||[]);
+
+    const hist = historyRes.ok ? await historyRes.json().catch(()=>[]) : [];
+    if(!historyRes.ok) showError('historyError','Failed to load history: '+historyRes.status); else showError('historyError','');
+    renderHistory(hist||[]);
+  } catch(e){
+    console.error('[kitchen] loadAll',e);
+    renderLive([]); renderHistory([]);
+  }
+}
+
+// --- RENDER ---
+function formatWhen(o){ return new Date(o.acceptedAt||o.time||new Date()).toLocaleString(); }
+function renderLive(orders){
+  const container = document.getElementById('liveOrders');
+  container.innerHTML='';
+  if(!orders.length){ container.innerHTML='<div style="color:#666;padding:8px">No live orders</div>'; return; }
+  orders.slice().reverse().forEach(o=>{
+    const div = document.createElement('div');
+    div.className='order';
+    const itemsHtml = (o.items||[]).map(it=>`<div>${escapeHtml(it.name)} × ${Number(it.qty)}</div>`).join('');
+    div.innerHTML=`
+      <div><strong>Order #${escapeHtml(String(o.id))}</strong> — <strong>Table:</strong> ${escapeHtml(String(o.tableNumber))}</div>
+      <div style="margin-top:8px">${itemsHtml}</div>
+      <div class="meta">Total: €${Number(o.total).toFixed(2)} • ${formatWhen(o)}</div>
+      <div class="controls" data-id="${o.id}"></div>`;
+    container.appendChild(div);
+
+    const controls = div.querySelector('.controls');
+    const acceptBtn = document.createElement('button');
+    acceptBtn.className='btn btn-accept';
+    acceptBtn.textContent='⚠️ Accept Order';
+    acceptBtn.addEventListener('click',()=>acceptOrder(o));
+    controls.appendChild(acceptBtn);
+  });
+}
+
+function renderHistory(hist){
+  const container = document.getElementById('history'); container.innerHTML=''; let sales=0;
+  if(!hist.length){ container.innerHTML='<div style="color:#666;padding:8px">No history for today</div>'; document.getElementById('salesTotal').textContent='💰 Total Sales: €0.00'; return; }
+  hist.slice().reverse().forEach(o=>{
+    sales+=Number(o.total||0);
+    const div=document.createElement('div'); div.className='order';
+    const itemsHtml=(o.items||[]).map(it=>`<div>${escapeHtml(it.name)} × ${Number(it.qty)}</div>`).join('');
+    div.innerHTML=`
+      <div><strong>Order #${escapeHtml(String(o.id))}</strong> — Table ${escapeHtml(String(o.tableNumber))}</div>
+      <div style="margin-top:6px">${itemsHtml}</div>
+      <div class="meta">Total: €${Number(o.total).toFixed(2)} • ${formatWhen(o)}</div>
+      <div class="controls" data-id="${o.id}"></div>`;
+    container.appendChild(div);
+    const controls=div.querySelector('.controls');
+    const printBtn=document.createElement('button'); printBtn.className='btn btn-print'; printBtn.textContent='🖨 Print';
+    printBtn.addEventListener('click',()=>printOnly(o)); controls.appendChild(printBtn);
+  });
+  document.getElementById('salesTotal').textContent="💰 Total Sales: €"+sales.toFixed(2);
+}
+
+// --- ACCEPT ORDER ---
+async function acceptOrder(order){
+  if(!order || !order.id) return alert('Invalid order');
+  if(!kitchenPassword) return alert('Password required!');
+  try{
+    const res = await fetch('/api/orders/'+encodeURIComponent(order.id)+'/status',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-kitchen-password': kitchenPassword},
+      body:JSON.stringify({status:'accepted'})
+    });
+    if(!res.ok){ const txt=await res.text().catch(()=>null); return alert('Failed: '+(txt||res.status)); }
+    await loadAll();
+  } catch(e){ alert('Network error'); }
+}
+
+// --- PRINT ---
+function printOnly(order){
+  const win=window.open('','', 'width=420,height=640');
+  const html=`<html><head><title>Order #${escapeHtml(String(order.id))}</title></head>
+  <body style="font-family:Arial;padding:18px">
+    <h2>Order #${escapeHtml(String(order.id))} — Table ${escapeHtml(String(order.tableNumber))}</h2>
+    <div>${(order.items||[]).map(i=>`<div>${escapeHtml(i.name)} × ${Number(i.qty)}</div>`).join('')}</div>
+    <div style="margin-top:12px"><strong>Total: €${Number(order.total).toFixed(2)}</strong></div>
+    <div style="margin-top:18px"><button onclick="window.print()">🖨 Print</button></div>
+  </body></html>`; win.document.write(html); win.document.close();
+}
+
+// --- CLEAR MODAL ---
+const clearBtn=document.getElementById('clearBtn');
+const clearModal=document.getElementById('clearModal');
+const modalPassword=document.getElementById('modalPassword');
+const modalTarget=document.getElementById('modalTarget');
+const modalCancel=document.getElementById('modalCancel');
+const modalConfirm=document.getElementById('modalConfirm');
+const modalCloseBtn=document.getElementById('modalCloseBtn');
+
+clearBtn.addEventListener('click',()=>{ modalPassword.value=''; modalTarget.value='live'; clearModal.style.display='flex'; });
+modalCancel.addEventListener('click',()=>clearModal.style.display='none');
+modalCloseBtn.addEventListener('click',()=>clearModal.style.display='none');
+modalConfirm.addEventListener('click', async ()=>{
+  const pw=modalPassword.value.trim(); const target=modalTarget.value;
+  if(!pw) return alert('Password required!');
+  kitchenPassword=pw;
+  try{
+    const res = await fetch('/api/clear',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-kitchen-password':kitchenPassword},
+      body:JSON.stringify({target})
+    });
+    const j=await res.json().catch(()=>null);
+    if(!res.ok) return alert('Clear failed: '+(j && j.error ? j.error : res.status));
+    alert('Cleared successfully ('+(target==='live'?'Live Orders':'History')+')');
+    clearModal.style.display='none'; await loadAll();
+  } catch(e){ alert('Network error'); }
+});
+
+// --- SHOW ANALYTICS BUTTON ONLY AFTER PASSWORD ---
+
+function showAnalyticsButton() {
+  const btn = document.getElementById('analyticsBtn');
+  btn.style.display = 'inline-block';
+  btn.onclick = () => {
+    window.location.href = '/analytics?pw=' + encodeURIComponent(kitchenPassword);
+  };
+}
+
+
+// --- KITCHEN PASSWORD POPUP ---
+const kitchenPopup=document.getElementById('kitchen-popup');
+const kitchenSubmit=document.getElementById('kitchenSubmitBtn');
+const kitchenInput=document.getElementById('kitchenPasswordInput');
+const kitchenError=document.getElementById('kitchenError');
+
+function askKitchenPassword(){
+  kitchenPopup.style.display='flex'; kitchenInput.focus();
+}
+function checkPassword(){
+  const val=kitchenInput.value.trim();
+  if(val==='BackPass123'){
+    kitchenPassword=val; kitchenPopup.style.display='none'; kitchenInput.value=''; kitchenError.style.display='none';
+    showAnalyticsButton();
+  } else { kitchenError.style.display='block'; kitchenInput.value=''; kitchenInput.focus(); }
+}
+kitchenSubmit.addEventListener('click',checkPassword);
+kitchenInput.addEventListener('keyup',e=>{ if(e.key==='Enter') checkPassword(); });
+
+// --- INITIALIZE ---
+window.onload=()=>{
+  askKitchenPassword();
+  setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleTimeString(),1000);
+  loadAll();
+  setInterval(loadAll, POLL_MS);
+};
+</script>
+</body>
+</html>
+

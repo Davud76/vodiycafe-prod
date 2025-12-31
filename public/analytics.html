@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VodiyCafe — Sales Analytics</title>
+<link rel="icon" href="/images/photo_2025-10-20_23-48-50.jpg" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#fefefe;}
+header{background:#ffd700;padding:30px;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;}
+header img{height:80px;}
+#navBtn{background:#3498db;color:white;padding:8px 12px;border:none;border-radius:6px;font-weight:600;cursor:pointer;}
+.form-row{margin:15px auto;text-align:center;}
+input[type=date]{padding:8px 10px;border-radius:6px;border:1px solid #ccc;margin:0 5px;}
+button.loadBtn{padding:8px 16px;border:none;border-radius:6px;background:#27ae60;color:white;cursor:pointer;font-weight:600;}
+button.loadBtn:hover{background:#219150;}
+#chartContainer{width:90%;max-width:600px;margin:20px auto;}
+#totalSales{text-align:center;font-size:18px;font-weight:bold;margin-top:20px;background:#b8fc0d;color:#0b581c;padding:12px 16px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+</style>
+</head>
+<body>
+<header>
+  <button id="navBtn" onclick="window.location.href='/kitchen'">🏠 Back to Kitchen</button>
+  <h1>📊 VodiyCafe — Sales Analytics</h1>
+</header>
+
+<div class="form-row">
+  <label>From: <input type="date" id="startDate"></label>
+  <label>To: <input type="date" id="endDate"></label>
+  <button class="loadBtn" id="loadBtn">Load Data</button>
+</div>
+
+<div id="chartContainer">
+  <canvas id="salesChart"></canvas>
+</div>
+<div id="totalSales">💰 Total Sales: €0.00</div>
+
+<script>
+let salesChart;
+function randomColor(){ return `hsl(${Math.floor(Math.random()*360)},70%,60%)`; }
+
+async function loadSales(){
+  const start=document.getElementById('startDate').value;
+  const end=document.getElementById('endDate').value;
+  const params=new URLSearchParams();
+  if(start) params.append('start',start);
+  if(end) params.append('end',end);
+  params.append('pw','BackPass123'); // required for protected API
+
+  try{
+    const res = await fetch('/api/analytics?' + params.toString());
+    if(!res.ok){ alert('Failed to load analytics'); return; }
+    const data = await res.json();
+    const labels = Object.keys(data.itemsCount);
+    const values = Object.values(data.itemsCount);
+
+    if(salesChart) salesChart.destroy();
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    salesChart = new Chart(ctx,{
+      type:'pie',
+      data:{labels, datasets:[{data:values, backgroundColor:labels.map(()=>randomColor())}]},
+      options:{responsive:true, plugins:{legend:{position:'bottom'}}}
+    });
+
+    document.getElementById('totalSales').textContent='💰 Total Sales: €'+data.totalSales.toFixed(2);
+  }catch(e){ console.error(e); alert('Error loading sales data'); }
+}
+
+document.getElementById('loadBtn').addEventListener('click', loadSales);
+window.onload=loadSales;
+</script>
+</body>
+</html>

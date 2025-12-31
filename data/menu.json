@@ -1,0 +1,12 @@
+[
+  { "name": "Osh", "description": "Traditional Uzbek rice dish cooked with tender meat, carrots, onions, and aromatic spices. A hearty and flavorful classic.", "price": 7.0, "image":"/images/uzbek-pilaf.jpg" },
+  { "name": "Tandir Somsa", "description": "Crispy baked pastry filled with juicy seasoned meat and onions, cooked in a traditional clay oven.", "price": 3.0,"image":"/images/Somsa.jpg" },
+  { "name": "Mastava", "description": "Traditional Uzbek soup made with tender meat, vegetables, and aromatic spices, served warm and comforting.", "price": 7.0, "image":"/images/Mastava.jpg" },
+  { "name": "Shashlik", "description": "Tender, marinated meat grilled to perfection, bursting with traditional Uzbek flavors.", "price": 8.0,"image":"/images/Shashlik.jpg" },
+  { "name": "Manti", "description": "Tender dumplings filled with spiced meat.", "price": 7.0, "image":"/images/Manti.jpg" },
+  { "name": "Moshkichri", "description": "Nutritious mung bean and rice dish, seasoned with traditional spices", "price": 7.0, "image":"/images/moshkichri.jpg" },
+   { "name": "Lag'mon", "description": "Savory noodle soup, rich with spices and veggies", "price": 7.0,"image":"/images/Lagmon.jpg" },
+  { "name": "Qovurma Lag'mon", "description": "Classic Uzbek noodle dish with flavorful fried meat and fresh veggies.", "price": 7.0,"image":"/images/qovurmaLagmon.jpg" },
+   { "name": "Beshbarmoq", "description": " The crown jewel of Uzbek cuisine, featuring hand-pulled noodles bathed in a savory, aromatic meat broth, topped with tender, slow-cooked lamb or beef. ", "price": 7.00 ,"image":"/images/beshbarmoq.jpg"},
+    { "name": "Qozon Kabob", "description": " Flavorful slow-cooked meat, capturing the essence of Uzbek cuisine", "price": 7.00,"image":"/images/qozonkabob.jpg"}
+] 

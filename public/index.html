@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scable=no"/>
+<title>VodiyCafe — Menu</title>
+<link rel="icon" href="/images/photo_2025-10-20_23-48-50.jpg" />
+<style>
+/* GENERAL STYLES */
+html, body { margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; min-height:100%; overflow-x:hidden; }
+a { text-decoration:none; color:#fff; }
+
+/* HEADER */
+header { background:#2d3228bd; color:#ecf2fb;border-bottom: 2px solid #b8962e; padding:10px 16px; position:sticky; top:0; z-index:10; display:flex; justify-content:center; align-items:center; }
+header h1 { margin:0; font-size:24px; }
+
+/* BACKGROUND */
+body { 
+  background:hwb(0 76% 17%); 
+  background-size: cover; 
+  background-position: center top; 
+  background-repeat: no-repeat; 
+  min-height: 80vh;
+}
+
+/* MAIN MENU */
+main { max-width:1000px; margin:20px auto; padding:20px; border-radius:15px; }
+.menu-title { font-size:28px; font-weight:bold; margin:12px auto; text-align:center; color:#fff; background: #809384; padding:14px 40px; border-radius:50px;display: block;width:fit-content ;}
+.menu-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+.card { background:rgba(255,255,255,0.2); border-radius:8px; padding:8px; display:flex; flex-direction:column; align-items:center; }
+.card img { width:100%; height:160px; object-fit:cover; border-radius:6px; cursor:pointer; transition:0.3s; }
+.card img:hover { transform: scale(1.05); }
+
+
+
+.menu-top.center{justify-content: center; padding: 8px 16px;}
+.logo-only{height: 44px ; width:44px; border-radius: 50%; object-fit: cover; border: 2px solid #ffff;background: #fff;}
+
+/* CARD TEXT */
+.card .titleBtn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-size: 16px;
+    font-weight: 700;
+    background: #740787;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+}
+.card .descBtn { margin-top:6px; padding:6px 12px; font-size:13px; cursor:pointer; border:none; border-radius:6px; background:#ac910a; color:white; }
+.card .bottom { display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:8px; }
+.card .priceBtn {
+    display: inline-block;
+    margin-top: 0;
+    padding: 4px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #2ecc71;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* BUTTON STYLES */
+.button { padding:8px 14px; font-weight:600; font-size: 14px; border-radius:6px; border:none; cursor:pointer; transition:0.25s ease; }
+.orderBtn { background:#3498db; color:#fff; }
+.plus { background:#2ecc71; color:#fff; }
+.minus { background:#e74c3c; color:#fff; }
+.remove { background:#022025; color:#fff; }
+.confirm { background:#3498db; color:#fff; }
+.cancel { background:#c0392b; color:#fff; }
+
+/* CART ICON */
+.cart { position:fixed; top:85px; right:30px; background:#fff; padding:10px 12px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.12); z-index:20; display:flex; align-items:center; gap:8px; font-size:22px; cursor:pointer; }
+.badge { background:#e74c3c; color:#fff; border-radius:50%; padding:3px 7px; display:none; }
+
+/* CART PANEL */
+.cart-panel { position:fixed; top:100px; right:30px; width:300px; max-height:70%; overflow:auto; background:#fff; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.15); padding:12px; display:none; z-index:30; }
+.cart-panel h2 { margin-top:0; margin-bottom:12px; color:#3498db; text-align:center; }
+.cart-item { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.cart-item img { width:40px; height:40px; object-fit:cover; border-radius:4px; margin-right:6px; }
+/* POPUPS */
+#imgPreview, #descOverlay, #comboNotice { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:9999; }
+#imgPreview div, #descOverlay div, #comboNotice div { position:relative; max-width:90%; max-height:90%; background:white; border-radius:12px; padding:20px; text-align:center; }
+#imgPreview img { width:100%; height:auto; object-fit:contain; }
+#imgPreview button, #descOverlay button, #comboNotice button { position:absolute; top:-10px; right:-10px; background:yellow; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-weight:bold; font-size:18px; }
+
+/* FOOTER */
+footer { margin-top:auto; padding:12px; background:rgba(140, 158, 171, 0.95); color:#fff; border-radius:8px; }
+table.contact-table{ width:100%; border-collapse:collapse; }
+table.contact-table td, table.contact-table th{ padding:6px 12px; border:1px solid rgba(255,255,255,0.6); }
+table.contact-table th{ background:rgba(255,255,255,0.2); }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 1500px) {
+  body {background-size: cover; background-position: center top;}
+  main { padding: 5px; margin: 5px auto; max-width: 100%; }
+  .menu-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 4px; }
+  .card img { height: 80px; }
+  .card .titleBtn { font-size: 11px; padding: 3px 6px; }
+  .card .descBtn { font-size: 11px; padding:3px 6px; }
+  .card .priceBtn { font-size: 11px; padding:3px 6px; }
+  .cart { top: 50px; right: 8px; font-size: 16px; padding: 6px 8px; }
+  .cart-panel { width: 80%; top: 70px; right: 7.5%; max-height: 50%; padding: 8px;}
+  footer { font-size: 11px; padding: 6px; position: relative; bottom: 0; width: 100%; }
+  .card {padding: 6px;}
+  .card-item span {font-size: 12px;}
+  #descOverlay div, #comboNotice div {padding: 10px;font-size: 13px;}
+  #descContent { font-size: 13px !important}
+  
+}
+</style>
+</head>
+<body>
+
+<header class="menu-top center">
+<img src="/images/photo_2025-10-20_23-48-50.jpg"
+alt="VodiyCafe logo" class="logo-only">
+  <h1>🍽 VodiyCafe</h1>
+  <div class="cart" id="cartBtn">👨🏻‍🍳 <span id="cartCount" class="badge">0</span></div>
+</header>
+
+<main>
+  <div class="menu-title"> MENU</div>
+  <div id="menuGrid" class="menu-grid"></div>
+</main>
+
+<!-- CART PANEL -->
+<div id="cartPanel" class="cart-panel">
+  <h2>Ordered Menu</h2>
+  <div id="cartItems"></div>
+  <div id="cartTotal" style="margin-top:10px;font-weight:bold"></div>
+  <div style="margin-top:12px; display:flex; gap:6px; justify-content:center;">
+    <button class="button confirm" id="confirmOrder">Confirm ✅</button>
+    <button class="button cancel" id="cancelOrder">Cancel ❌</button>
+  </div>
+</div>
+
+<!-- IMAGE PREVIEW -->
+<div id="imgPreview">
+  <div>
+    <img id="previewImg" src="">
+    <button id="closePreview">×</button>
+  </div>
+</div>
+
+<!-- DESCRIPTION OVERLAY -->
+<div id="descOverlay">
+  <div>
+    <div id="descContent" style="font-size:20px;"></div>
+    <button id="closeDesc">×</button>
+  </div>
+</div>
+
+<!-- COMBO NOTICE -->
+<div id="comboNotice">
+  <div>
+    <h2 style="font-size:28px; color:red;">🎉 Combo Set Applied! Only €9! 🎉</h2>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div id="notification-container"></div>
+
+<footer>
+  <table class="contact-table">
+    <tr><th>Contact Info</th><th>Details</th></tr>
+    <tr><td>Telegram</td><td>@Vodiy_Cafe</td></tr>
+    <tr><td>Phone number</td><td>+37125482222</td></tr>
+    <tr><td>Location</td><td>Lubanas Iela, Riga</td></tr>
+  </table>
+  <p style="margin-top: 10px;text-align: center;font-size: 14px;color: #fff;">© 2025 Davud Jepbarbergenov — All Rights Reserved.</p>
+</footer>
+
+<script>
+let menu = [];
+let cart = {};
+
+async function loadMenu(){
+  try{
+    const res = await fetch('/api/menu');
+    menu = await res.json();
+    renderMenu();
+  }catch(err){
+    console.error('Failed to load menu', err);
+    document.getElementById('menuGrid').innerHTML = '<div style="padding:12px;color:#a00">Failed to load menu.</div>';
+  }
+}
+
+function showNotification(message, type='info', duration=3000){
+  const container = document.getElementById('notification-container');
+  const notif = document.createElement('div');
+  notif.textContent = message;
+  notif.style.padding = '14px 20px';
+  notif.style.borderRadius = '12px';
+  notif.style.color = '#fff';
+  notif.style.fontWeight = '600';
+  notif.style.fontSize = '14px';
+  notif.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+  notif.style.opacity = '0';
+  notif.style.transform = 'translateX(100%)';
+  notif.style.transition = '0.5s ease';
+  notif.style.background = type==='success'? '#27ae60': type==='error'? '#c0392b':'#3498db';
+  container.appendChild(notif);
+  setTimeout(()=>{ notif.style.opacity='1'; notif.style.transform='translateX(0)'; }, 50);
+  setTimeout(()=>{
+    notif.style.opacity='0';
+    notif.style.transform='translateX(100%)';
+    setTimeout(()=> container.removeChild(notif), 500);
+  }, duration);
+}
+
+function renderMenu(){
+  const grid = document.getElementById('menuGrid');
+  grid.innerHTML = '';
+  menu.forEach((it, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${it.image||'/images/yellowimage.jpg'}" alt="${it.name}" data-idx="${idx}">
+      <div class="titleBtn">${it.name}</div>
+      <button class="descBtn" data-idx="${idx}">Description</button>
+      <div class="bottom">
+        <div class="priceBtn">€${Number(it.price).toFixed(2)}</div>
+        <button class="button orderBtn" data-idx="${idx}">Order</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  document.querySelectorAll('.orderBtn').forEach(b=>{
+    b.onclick = e=>{
+      const idx = Number(e.target.dataset.idx);
+      const it = menu[idx];
+      const id = 'm'+idx;
+      if(!cart[id]) cart[id] = { id, name: it.name, price: it.price, qty:0, image: it.image };
+      cart[id].qty++;
+      checkCombo();
+      updateCartUI();
+      renderCart();
+    };
+  });
+  document.querySelectorAll('.descBtn').forEach(b=>{
+    b.onclick = e=>{
+      const idx = Number(e.target.dataset.idx);
+      document.getElementById('descContent').textContent = menu[idx].description;
+      document.getElementById('descOverlay').style.display='flex';
+    };
+  });
+  document.querySelectorAll('.card img').forEach(img=>{
+    img.onclick = e=>{
+      document.getElementById('previewImg').src = menu[e.target.dataset.idx].image||'/images/yellowimage.jpg';
+      document.getElementById('imgPreview').style.display='flex';
+    };
+  });
+}
+
+function checkCombo(){
+  const countItems = Object.values(cart).reduce((s,i)=>s+i.qty,0);
+  if(countItems === 3){
+    const notice = document.getElementById('comboNotice');
+    notice.style.display='flex';
+    setTimeout(()=>{ notice.style.display='none'; }, 2000); // disappears after 2s
+    Object.values(cart).forEach(i=>i.price=3); // 3 items x 3 = 9
+  } else {
+    menu.forEach((it,idx)=>{ const id='m'+idx; if(cart[id]) cart[id].price=it.price; });
+  }
+}
+
+function updateCartUI(){
+  const count = Object.values(cart).reduce((s,i)=> s+i.qty,0);
+  const badge = document.getElementById('cartCount');
+  badge.style.display = count>0?'inline-block':'none';
+  badge.textContent = count;
+}
+
+document.getElementById('cartBtn').onclick = ()=>{ document.getElementById('cartPanel').style.display='block'; renderCart(); };
+
+function renderCart(){
+  const container = document.getElementById('cartItems');
+  container.innerHTML = '';
+  let total=0;
+  Object.values(cart).forEach(it=>{
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `<img src="${it.image||'/images/yellowimage.jpg'}"> <span>${it.name} × ${it.qty} (€${(it.price*it.qty).toFixed(2)})</span>
+      <button class="button plus" data-id="${it.id}">➕</button>
+      <button class="button minus" data-id="${it.id}">➖</button>
+      <button class="button remove" data-id="${it.id}">❌</button>`;
+    container.appendChild(div);
+    total += it.price*it.qty;
+  });
+  document.getElementById('cartTotal').textContent = 'Total: €'+total.toFixed(2);
+
+  container.querySelectorAll('.plus').forEach(b=>b.onclick=e=>{
+    cart[e.target.dataset.id].qty++;
+    checkCombo();
+    updateCartUI();
+    renderCart();
+  });
+  container.querySelectorAll('.minus').forEach(b=>b.onclick=e=>{
+    const id=e.target.dataset.id;
+    cart[id].qty--;
+    if(cart[id].qty<=0) delete cart[id];
+    checkCombo();
+    updateCartUI();
+    renderCart();
+  });
+  container.querySelectorAll('.remove').forEach(b=>b.onclick=e=>{
+    delete cart[e.target.dataset.id];
+    checkCombo();
+    updateCartUI();
+    renderCart();
+  });
+}
+
+// MODAL CLOSE
+document.getElementById('closePreview').onclick = ()=>{ document.getElementById('imgPreview').style.display='none'; };
+document.getElementById('closeDesc').onclick = ()=>{ document.getElementById('descOverlay').style.display='none'; };
+
+// CONFIRM ORDER
+document.getElementById('confirmOrder').onclick = ()=>{
+  if(Object.keys(cart).length===0) return showNotification('❌ Cart empty','error');
+  
+  // get table token from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const tableToken = urlParams.get('token');
+  if(!tableToken) return showNotification('❌ Table token missing! Scan QR code','error');
+
+  submitOrder(tableToken);
+};
+
+// submit order function
+const BACKEND_URL_PROD='https://www.vodiycafe.com'
+const BACKEND_URL_DEV='http://localhost:3000';
+async function submitOrder(tableToken){
+  const items = Object.values(cart).map(i=>({name:i.name, qty:i.qty, price:i.price}));
+  const total = items.reduce((s,i)=>s+i.price*i.qty,0);
+  try{
+    console.log(JSON.stringify({items, tableToken, total, time:new Date().toISOString()}))
+    const res = await fetch(`${BACKEND_URL_PROD}/api/orders`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({items, tableToken, total, time:new Date().toISOString()})
+    });
+    const j = await res.json();
+    if(j.error) return showNotification('❌ Error: '+j.error,'error');
+    showNotification('✅ Order sent! ID: '+(j.order?.id||'—'),'success');
+    cart={};
+    updateCartUI();
+    document.getElementById('cartPanel').style.display='none';
+  }catch(err){
+    showNotification('❌ Failed to send order','error');
+    console.error(err);
+  }
+}
+
+// CANCEL ORDER
+document.getElementById('cancelOrder').onclick = ()=>{
+  cart={};
+  updateCartUI();
+  document.getElementById('cartPanel').style.display='none';
+  showNotification('❌ Order cancelled','error');
+};
+
+loadMenu();
+</script>
+
+</body>
+</html>
